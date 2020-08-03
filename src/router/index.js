@@ -59,13 +59,21 @@ const routes = [
     path: '/admin',
     component: () => import('../views/dashboard/Dashboard.vue'), // APP.vue的 router-view顯示 Dashboard.vue的內容
     children: [
-      {
-        path: '/',
-        component: () => import('../views/dashboard/Products.vue')
-      },
+      // {
+      //   path: '/',
+      //   component: () => import('../views/dashboard/Products.vue')
+      // },
       {
         path: 'products',
         component: () => import('../views/dashboard/Products.vue')
+      },
+      {
+        path: 'order',
+        component: () => import('../views/dashboard/Order.vue')
+      },
+      {
+        path: 'coupon',
+        component: () => import('../views/dashboard/Coupon.vue')
       }
     ]
   }

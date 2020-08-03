@@ -229,8 +229,8 @@ export default {
         alert('您未挑選房間喔!~')
         $('#shoppingModal').modal('hide')
       } else {
-        // window.location = "payment.html"
         vm.$router.push('/payment')
+        $('#shoppingModal').modal('hide')
       }
     }
   },

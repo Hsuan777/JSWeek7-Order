@@ -1,7 +1,7 @@
 <template>
   <section class="container">
     <loading :active.sync="isLoading"></loading>
-    <h2 id="peopleData" class="mt-2 mb-5 font-weight-bold text-primary">預定人資料</h2>
+    <h2 id="peopleData" class="mt-2 mb-5 font-weight-bold">顧客資訊</h2>
     <div class="row">
       <div class="col-6">
         <validation-observer v-slot="{ invalid }">
@@ -49,7 +49,7 @@
               <small class="invalid-feedback">{{ errors[0] }}</small>
             </validation-provider>
             <validation-provider
-              rules="digits:10|required"
+              rules="min:10|required"
               v-slot="{ errors, classes }"
               tag="div"
               class="form-group"
@@ -65,7 +65,7 @@
                 placeholder="預定人電話"
                 class="form-control form-control-lg"
                 :class="classes"
-                v-model="person.phone"
+                v-model="person.tel"
               />
               <small class="invalid-feedback">{{ errors[0] }}</small>
             </validation-provider>
@@ -92,7 +92,7 @@
             </validation-provider>
             <div class="form-group">
               <label for="selectPay" class="h3 font-weight-bold">付款方式</label>
-              <select name="selectPay" id="selectPay" class="form-control form-control-lg">
+              <select name="selectPay" id="selectPay" class="form-control form-control-lg" v-model="person.payment">
                 <option value disabled>請選擇付款方式</option>
                 <option :value="item" v-for="(item, index) in selectPay" :key="index">{{ item }}</option>
               </select>
@@ -107,6 +107,7 @@
                 class="btn btn-info btn-lg btn-block"
                 value="結帳"
                 :disabled="invalid"
+                @click.prevent="order"
               />
             </div>
           </form>
@@ -155,10 +156,11 @@ export default {
         'GooglePay'
       ],
       person: {
-        name: '',
-        email: '',
-        phone: '',
-        address: ''
+        name: '六小杰',
+        email: 'hex@gmail.com',
+        tel: '0999123456',
+        address: '高雄市小港區',
+        payment: ''
       },
       shopping: {
         data: [],
@@ -183,6 +185,21 @@ export default {
           })
           vm.shopping.moneyTotal = total
           vm.isLoading = false
+        })
+    },
+    order () {
+      const vm = this
+      vm.isLoading = true
+      vm.axios
+        .post(
+          `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/orders`, vm.person
+        )
+        .then((response) => {
+          // 後台需要刷新才會有資料
+          vm.isLoading = false
+          // TODO:改成 modal
+          alert('感謝您的訂購~')
+          vm.$router.push('/products')
         })
     }
   },

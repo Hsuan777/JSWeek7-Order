@@ -11,18 +11,18 @@
         data-toggle="modal"
         data-target="#addProductModal"
         @click="initData"
-      >新增房間</button>
+      >新增產品</button>
     </div>
     <div class="table-responsive">
       <table class="table border-bottom">
         <thead>
           <tr>
-            <th scope="row" class="text-nowrap">房間分類</th>
-            <th scope="row" width="300px">房間名稱</th>
-            <th scope="row">額外服務</th>
-            <th scope="row" width="150px" class="text-right text-nowrap">原價</th>
-            <th scope="row" width="150px" class="text-right text-nowrap">售價</th>
-            <th scope="row" width="150px" class="text-center text-nowrap">是否開放</th>
+            <th scope="row" class="text-nowrap">產品分類</th>
+            <th scope="row" width="150px">產品名稱</th>
+            <th scope="row" width="300px">產品顏色</th>
+            <th scope="row" width="100px" class="text-right text-nowrap">原價</th>
+            <th scope="row" width="100px" class="text-right text-nowrap">售價</th>
+            <th scope="row" width="100px" class="text-center text-nowrap">是否開放</th>
             <th scope="row" class="text-nowrap">編輯</th>
           </tr>
         </thead>
@@ -30,8 +30,10 @@
           <tr v-for="(item) in hexAPI.data" :key="item.id">
             <td class="align-middle">{{item.category}}</td>
             <td class="align-middle">{{item.title}}</td>
-            <td class="align-middle">
-              <span v-for="(item, index) in item.services" :key="index">。{{item}}</span>
+            <td class="align-middle" v-if="item.options">
+              <span v-for="(item, index) in item.options.colors" :key="index">
+                。{{item}}
+              </span>
             </td>
             <td class="text-right align-middle">{{item.origin_price}}</td>
             <td class="text-right align-middle">{{item.price}}</td>
@@ -130,7 +132,7 @@
                         <label for class>單位</label>
                         <input
                           type="text"
-                          placeholder="間"
+                          placeholder="個"
                           class="form-control"
                           v-model="temporary.unit"
                         />
@@ -147,7 +149,6 @@
                         />
                       </div>
                     </div>
-
                     <div class="col-6">
                       <div class="form-group">
                         <label for class>售價</label>
@@ -178,6 +179,19 @@
                       class="form-control"
                       v-model="temporary.content"
                     ></textarea>
+                  </div>
+                  <!-- 若沒有 value，預設會是布林值 -->
+                  <!-- TODO:接收資料回來時，可能還需要再多一個暫存空間放 options -->
+                  <div class="form-check form-check-inline mb-3" v-for="(item, index) in product.options.colors" :key="index">
+                    <input
+                      type="checkbox"
+                      :id="`checkbox${index}`"
+                      class="form-check-input"
+                      :value="item"
+                      v-model="temporary.options.colors"
+                      v-if="temporary.options"
+                    >
+                    <label :for="`checkbox${index}`" class="form-check-label">{{ item }}</label>
                   </div>
                   <div class="form-check">
                     <input
@@ -244,29 +258,38 @@
 </template>
 
 <script>
-import $ from 'jquery'
+/* global $ */
+// import $ from 'jquery'
 export default {
   data () {
     return {
       product: {
-        title: 'test',
-        category: 'testCategory',
+        title: '鋁框行李箱',
+        category: '行李箱',
         content: 'test',
         description: 'test',
         imageUrl: [
-          'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1351&q=80'
+          'https://cf.shopee.tw/file/3c83aaa78b7bd35d18777790eb3d8a87'
         ],
         enabled: true,
         origin_price: '2000',
         price: '1000',
-        unit: '個'
+        unit: '個',
+        options: {
+          colors: ['曜石黑', '玫瑰金']
+          // sizes: ['26吋', '29吋']
+        }
       },
       hexAPI: {
         data: []
       },
       pagination: {},
       temporary: {
-        imageUrl: []
+        imageUrl: [],
+        options: {
+          colors: []
+          // sizes: []
+        }
       },
       modalTitle: '',
       isLoading: false
@@ -279,7 +302,6 @@ export default {
     getData (page = 1) {
       const vm = this
       // vm.axios的驗證指令，Bearer是後端用的
-      // const token = document.cookie.replace(/(?:(?:^|.*;\s*)hexToken\s*\=\s*([^;]*).*$)|^.*$/, '$1')
       vm.isLoading = true
       vm.axios.defaults.headers.common.Authorization = `Bearer ${vm.token}`
       vm.axios
@@ -289,14 +311,16 @@ export default {
         .then((res) => {
           // 取得該頁資料
           vm.hexAPI.data = res.data.data
+          console.log(vm.hexAPI.data)
           // 取得分頁資訊
           vm.pagination = res.data.meta.pagination
           vm.isLoading = false
         })
     },
     /* 新增資料 */
-    addProduct () {
+    addData () {
       const vm = this
+      console.log(vm.temporary)
       vm.axios.defaults.headers.common.Authorization = `Bearer ${vm.token}`
       vm.axios
         .post(`${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/ec/product`, vm.temporary)
@@ -308,14 +332,14 @@ export default {
     // 將 this.product的屬性值複製到暫存
     initData () {
       this.modalTitle = '新增商品'
-      this.temporary = Object.assign({}, this.product)
+      // Object.assign 為潛層拷貝，若需要 options，則必須使用深拷貝
+      // this.temporary = Object.assign({}, this.product)
+      this.temporary = JSON.parse(JSON.stringify(this.product))
     },
     /* 複製資料 */
     // 將 v-for所取出的 item放入暫存
     copyData (action, item) {
       const vm = this
-      $('#addProductModal').modal('hide')
-      $('#deleteProductModal').modal('hide')
       vm.isLoading = true
       vm.axios.defaults.headers.common.Authorization = `Bearer ${vm.token}`
       vm.axios
@@ -334,6 +358,7 @@ export default {
     /* 修改資料 */
     updateData () {
       const vm = this
+      vm.isLoading = true
       // if判斷，若有值則為 true
       if (vm.temporary.id) {
         vm.hexAPI.data.forEach((item) => {
@@ -365,8 +390,7 @@ export default {
             .then(() => {
               vm.getData()
               vm.cleanData()
-              vm.isLoading = false
-              $('#deleteProductModal').modal('show')
+              $('#deleteProductModal').modal('hide')
             })
         }
       })

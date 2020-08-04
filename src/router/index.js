@@ -74,6 +74,10 @@ const routes = [
       {
         path: 'coupon',
         component: () => import('../views/dashboard/Coupon.vue')
+      },
+      {
+        path: 'storages',
+        component: () => import('../views/dashboard/Storages.vue')
       }
     ]
   }

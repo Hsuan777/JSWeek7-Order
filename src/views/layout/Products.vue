@@ -31,8 +31,8 @@
             <!-- <button type="button" class="btn btn-secondary"  @click="viewRoom(item.id)" data-toggle="modal"
       data-target="#viewRoomModal">預覽房型</button> -->
             <!-- 產品細節方案二 : 更改路由，重新渲染畫面 -->
-            <router-link :to="`/product/${item.id}`" class="btn btn-secondary">預覽房型</router-link>
-            <button type="button" class="btn btn-primary" @click="addShopping(item.id)">預定房間</button>
+            <router-link :to="`/product/${item.id}`" class="btn btn-secondary">More</router-link>
+            <button type="button" class="btn btn-primary" @click="addShopping(item.id)">加入購物車</button>
           </div>
         </div>
       </li>

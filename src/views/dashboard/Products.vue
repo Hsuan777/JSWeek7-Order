@@ -258,8 +258,7 @@
 </template>
 
 <script>
-/* global $ */
-// import $ from 'jquery'
+import $ from 'jquery'
 export default {
   data () {
     return {

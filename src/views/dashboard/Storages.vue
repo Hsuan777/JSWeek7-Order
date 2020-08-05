@@ -9,7 +9,7 @@
         type="button"
         class="btn btn-primary btn-lg px-3"
         data-toggle="modal"
-        data-target="#addCouponModal"
+        data-target="#addStorageModal"
         @click="initData"
       >新增檔案</button>
     </div>
@@ -26,7 +26,7 @@
           <tr v-for="(item) in hexAPI.data" :key="item.id">
             <td class="align-middle">{{item.id}}</td>
             <td class="align-middle">
-              <img :src="item.path" alt="">
+              <img :src="item.path" alt="" class="img-fluid">
             </td>
             <td class="pr-0">
               <button
@@ -48,12 +48,12 @@
     </div>
 
     <!-- add/edit Modal -->
-    <!-- <div
+    <div
       class="modal fade"
-      id="addCouponModal"
+      id="addStorageModal"
       tabindex="-1"
       role="dialog"
-      aria-labelledby="addProductModalLabel"
+      aria-labelledby="addStorageModal"
       aria-hidden="true"
     >
       <div class="modal-dialog" role="document">
@@ -70,25 +70,16 @@
                 <div class="col-6">
                   <div class="form-group">
                     <label for class>商品圖片</label>
+                    <!-- accept 能接受的檔案類型 -->
                     <input
-                      type="text"
-                      placeholder="請輸入圖片網址"
+                      type="file"
                       class="form-control"
-                      v-model="temporary.imageUrl[0]"
+                      accept="image/png, image/jpeg"
+                      @change="getFile"
+                      ref="updataFile"
                     />
                   </div>
-                  <img :src="temporary.imageUrl[0]" alt class="img-fluid">
-                </div>
-                <div class="col-6">
-                  <div class="form-group">
-                    <label>檔案名稱</label>
-                    <input
-                      type="text"
-                      placeholder="檔案名稱"
-                      class="form-control"
-                      v-model="temporary.title"
-                    />
-                  </div>
+                  <img :src="temporary.file" alt class="img-fluid" v-if="temporary.file">
                 </div>
               </div>
             </form>
@@ -104,7 +95,7 @@
           </div>
         </div>
       </div>
-    </div> -->
+    </div>
 
     <!-- delete Modal -->
     <!-- <div
@@ -150,9 +141,11 @@ export default {
   data () {
     return {
       hexAPI: {
-        data: {}
+        data: []
       },
-      temporary: {},
+      temporary: {
+        file: ''
+      },
       modalTitle: '',
       isLoading: false
     }
@@ -169,16 +162,31 @@ export default {
         )
         .then((response) => {
           vm.hexAPI.data = response.data.data
-          console.log(response)
           vm.isLoading = false
         })
+    },
+    getFile () {
+      // const vm = this
+      // vm.temporary.file = vm.$refs.updataFile.files[0]
+      // TODO:上傳圖片預覽
+      // const formData = new FormData()
+      // formData.append('image', vm.$refs.updataFile.files[0])
+      // const objectURL = URL.createObjectURL(vm.$refs.updataFile.files[0])
+      // console.log(objectURL)
+      // const reader = new FileReader()
+      // reader.onload = function (e) {
+      //   console.log('file:', e.target.result)
+      // }
+      // reader.readAsDataURL(vm.temporary.file)
     },
     /* 新增資料 */
     addData () {
       const vm = this
+      const formData = new FormData()
+      formData.append('file', vm.$refs.updataFile.files[0])
       vm.axios.defaults.headers.common.Authorization = `Bearer ${vm.token}`
       vm.axios
-        .post(`${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/storage`, vm.temporary)
+        .post(`${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/storage`, formData)
         .then(() => {
           vm.getData()
         })

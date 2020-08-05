@@ -60,9 +60,9 @@
             <table class="table table-borderless">
               <thead>
                 <tr>
-                  <th>房間名稱</th>
+                  <th>商品名稱</th>
                   <th class="text-right">價格</th>
-                  <th class="text-center">間數</th>
+                  <th class="text-center">數量</th>
                   <th class="text-center">操作</th>
                 </tr>
               </thead>
@@ -70,7 +70,13 @@
                 <tr v-for="(item, index) in shopping.data" :key="index" class="border-top">
                   <td class="align-middle">{{ item.product.title }}</td>
                   <td class="align-middle text-right">{{ item.product.price }}</td>
-                  <td class="align-middle text-center">{{ item.quantity }}</td>
+                  <td class="align-middle text-center">
+                    <div class="btn-group" role="group" aria-label="Basic example">
+                      <button type="button" class="btn btn-outline-secondary text-dark" @click.prevent="productQuantity('reduce', item.product.id, item.quantity)"> - </button>
+                      <button type="button" class="btn btn-outline-secondary text-dark"> {{ item.quantity }} </button>
+                      <button type="button" class="btn btn-outline-secondary text-dark" @click.prevent="productQuantity('add', item.product.id, item.quantity)"> + </button>
+                    </div>
+                  </td>
                   <td class="align-middle text-center">
                     <button
                       type="button"
@@ -130,7 +136,7 @@ export default {
       },
       temporary: {
         product: '',
-        quantity: '1'
+        quantity: 1
       },
       shopping: {
         data: [],
@@ -152,23 +158,11 @@ export default {
           vm.isLoading = false
         })
     },
-    // 產品細節方案一 : 使用 modal，但需要重新讀取，造成每次預覽點擊會有等待時間
-    // viewRoom (pid) {
-    //   const vm = this
-    //   // vm.isLoading = true // 會造成 Maximum call stack size exceeded.
-    //   vm.axios
-    //     .get(
-    //       `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/product/${pid}`
-    //     )
-    //     .then((response) => {
-    //       vm.hexAPI.product = response.data.data
-    //       // vm.isLoading = false
-    //     })
-    // },
     addShopping (pid) {
       const vm = this
       vm.isLoading = true
       vm.temporary.product = pid
+      vm.temporary.quantity = 1
       vm.axios
         .post(
           `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/shopping`,
@@ -177,6 +171,38 @@ export default {
         .then(() => {
           vm.getShopping()
         })
+        .catch(() => {
+          alert('商品已存在，請修改數量即可~')
+          vm.isLoading = false
+        })
+    },
+    productQuantity (action, pid, quantity) {
+      const vm = this
+      vm.isLoading = true
+      vm.temporary.product = pid
+      vm.temporary.quantity = quantity
+      switch (action) {
+        case 'add':
+          vm.temporary.quantity += 1
+          break
+        case 'reduce':
+          if (vm.temporary.quantity - 1 === 0) {
+            alert('最低為 1!')
+            vm.isLoading = false
+          } else {
+            vm.temporary.quantity -= 1
+            break
+          }
+      }
+      if (vm.temporary.quantity !== quantity) {
+        vm.axios
+          .patch(
+            `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/shopping`, vm.temporary
+          )
+          .then(() => {
+            vm.getShopping()
+          })
+      }
     },
     getShopping () {
       const vm = this
@@ -188,7 +214,7 @@ export default {
           vm.shopping.data = response.data.data
           let total = 0
           vm.shopping.data.forEach((item) => {
-            total += item.product.price
+            total += item.product.price * item.quantity
           })
           vm.shopping.moneyTotal = total
           vm.isLoading = false
@@ -226,7 +252,6 @@ export default {
     pay () {
       const vm = this
       if (vm.shopping.data.length === 0) {
-        alert('您未挑選房間喔!~')
         $('#shoppingModal').modal('hide')
       } else {
         vm.$router.push('/payment')

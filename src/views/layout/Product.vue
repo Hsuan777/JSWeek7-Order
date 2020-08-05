@@ -1,7 +1,8 @@
 <template>
-  <section>
+  <section  class="container mt-6">
     <loading :active.sync="isLoading"></loading>
     <h2>{{ hexAPI.product.title }}</h2>
+    <img :src="hexAPI.product.imageUrl[0]" class="img-fluid rounded-top">
     <p>{{ hexAPI.product.content }}</p>
   </section>
 </template>

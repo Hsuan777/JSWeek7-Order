@@ -117,10 +117,10 @@
         <table class="table table-borderless">
           <thead>
             <tr>
-              <th>房間名稱</th>
-              <th>房間預覽圖</th>
+              <th>商品名稱</th>
+              <th>商品預覽</th>
               <th class="text-right">價格</th>
-              <th class="text-center">間數</th>
+              <th class="text-center">數量</th>
             </tr>
           </thead>
           <tbody>

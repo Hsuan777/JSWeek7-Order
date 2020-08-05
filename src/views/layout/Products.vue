@@ -1,5 +1,5 @@
 <template>
-  <section class="container">
+  <section class="container mt-6">
     <loading :active.sync="isLoading"></loading>
     <h2 class="mt-2 mb-5 font-weight-bold">行李箱</h2>
     <button
@@ -14,16 +14,16 @@
     <ul class="list__products row list-unstyled">
       <li class="col-4" v-for="(item) in hexAPI.data" :key="item.id">
         <div class="card mb-3">
-          <img :src="item.imageUrl[0]" class="img-fluid rounded-top" />
+          <img :src="item.imageUrl[0]" class="img-fluid rounded-top">
           <div class="card-body">
             <h5 class="font-weight-bold">{{item.title}}</h5>
-            <p>{{item.content}}</p>
+            <small v-for="(color, index) in item.options.colors" :key="index" class="mr-2">{{color}}</small>
+            <p class="mt-2">{{item.content}}</p>
             <div class="d-flex justify-content-between">
               <p class="mb-0">
-                原價 :
-                <del>{{item.origin_price}}</del>
+                原價 : <del>{{item.origin_price}}</del>
               </p>
-              <p class="mb-0">早鳥 : {{item.price}}</p>
+              <p class="mb-0">特價 : {{item.price}}</p>
             </div>
           </div>
           <div class="card-footer d-flex justify-content-between">
@@ -31,8 +31,8 @@
             <!-- <button type="button" class="btn btn-secondary"  @click="viewRoom(item.id)" data-toggle="modal"
       data-target="#viewRoomModal">預覽房型</button> -->
             <!-- 產品細節方案二 : 更改路由，重新渲染畫面 -->
-            <router-link :to="`/product/${item.id}`" class="btn btn-secondary">More</router-link>
-            <button type="button" class="btn btn-primary" @click="addShopping(item.id)">加入購物車</button>
+            <router-link :to="`/product/${item.id}`" class="btn btn-primary">More</router-link>
+            <button type="button" class="btn btn-info" @click="addShopping(item.id)">加入購物車</button>
           </div>
         </div>
       </li>

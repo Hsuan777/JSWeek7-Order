@@ -28,6 +28,8 @@
             </button>
           </div>
           <div class="modal-body">
+            <!-- 元件內要使用 loading，必須放在該元件樣板的元素中 -->
+            <loading :active.sync="isLoading"></loading>
             <table class="table table-borderless">
               <thead>
                 <tr>
@@ -76,12 +78,13 @@ export default {
   name: 'cart',
   data () {
     return {
-      shopping: {
-        data: [],
-        moneyTotal: 0
-      },
       temporary: {},
       isLoading: false
+    }
+  },
+  props: {
+    shopping: {
+      type: Object
     }
   },
   methods: {

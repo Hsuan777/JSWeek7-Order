@@ -43,18 +43,14 @@
             </td>
             <td class="pr-0">
               <div class="btn-group">
-              <button
-                class="btn btn-secondary"
-                @click="copyData('edit', item)"
-                data-target="#addProductModal"
-                value="edit"
-              >修改</button>
-              <button
-                class="btn btn-outline-danger"
-                @click="copyData('delete', item)"
-                data-target="#deleteProductModal"
-                value="delete"
-              >刪除</button>
+                <button
+                  class="btn btn-secondary"
+                  @click="copyData('edit', item)"
+                >修改</button>
+                <button
+                  class="btn btn-outline-danger"
+                  @click="copyData('delete', item)"
+                >刪除</button>
               </div>
             </td>
           </tr>
@@ -63,14 +59,7 @@
     </div>
 
     <div class="d-flex justify-content-center">
-      <!-- <pagination> -> 元件自定義名稱 -->
-      <!-- pages -> props，元件自定義屬性 -->
-      <!-- v-bind:pages -> 帶入 Vue data裡的 pagination -->
-      <!-- @emit-pages -> 自訂元件中，methods其中一個事件或函式，
-      元件樣板內可以有大小寫，但網頁中的要加上 - 符號-->
-      <!-- getData -> Vue methods裡的其中一個函式 -->
-      <!-- @emit-pages getData -->
-      <!-- <pagination :pages="pagination" @emit-pages="getData"></pagination> -->
+      <pagination :pages="pagination" @emit-pages="getData"></pagination>
     </div>
 
     <!-- add/edit Modal -->
@@ -259,7 +248,9 @@
 
 <script>
 import $ from 'jquery'
+import pagination from '../../components/pagination.vue'
 export default {
+  components: { pagination },
   data () {
     return {
       product: {

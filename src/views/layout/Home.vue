@@ -57,7 +57,7 @@
       <!-- Special Clays -->
       <div class="row mb-lg-4 mb-3">
         <div class="col-md-6 col-12 mb-2 mb-md-0">
-          <img src="https://images.unsplash.com/photo-1564209510114-d98212b0e861?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1489&q=80" alt="" class="test img-fluid rounded object-fit">
+          <img src="https://images.unsplash.com/photo-1564209510114-d98212b0e861?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1489&q=80" alt="" class="inner__img img-fluid rounded object-fit">
         </div>
         <div class="col-md-6  ">
           <div class="row justify-content-center align-items-center h-100 ">
@@ -75,7 +75,7 @@
       <div class="row flex-lg-row-reverse mb-lg-4 mb-3 ">
         <div class="col-md-6 col-12 mb-2 mb-md-0">
           <div class="d-flex justify-content-center">
-            <img src="https://images.unsplash.com/photo-1553061625-5996e4721a17?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80" alt="" class="test img-fluid object-fit rounded">
+            <img src="https://images.unsplash.com/photo-1553061625-5996e4721a17?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80" alt="" class="inner__img img-fluid object-fit rounded">
           </div>
         </div>
         <div class="col-md-6 ">

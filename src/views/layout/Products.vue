@@ -2,6 +2,7 @@
   <section class="container mt-6">
     <loading :active.sync="isLoading"></loading>
     <h2 class="mt-2 mb-5 font-weight-bold">行李箱</h2>
+    <!-- 將 購物車作為元件 -->
     <!-- <button
       type="button"
       class="shoppingTop btn btn-secondary btn-lg text-decoration-none d-flex p-2"
@@ -11,7 +12,8 @@
       <span class="material-icons">shopping_cart</span>
       <sup class="text-danger ml-n1">{{ shopping.data.length }}</sup>
     </button> -->
-    <cart></cart>
+
+    <cart :shopping="apiShoppingData"></cart>
     <ul class="list__products row list-unstyled mb-5">
       <li class="col-4" v-for="(item) in hexAPI.data" :key="item.id">
         <div class="card mb-3">
@@ -53,6 +55,10 @@ export default {
         data: [],
         product: {}
       },
+      apiShoppingData: {
+        data: [],
+        moneyTotal: 0
+      },
       temporary: {
         product: '',
         quantity: 1
@@ -87,13 +93,28 @@ export default {
           vm.temporary
         )
         .then(() => {
-          // TODO:如何觸發元件?
-          // vm.getShopping()
+          vm.getShopping()
           alert('已成功加入購物車~')
           vm.isLoading = false
         })
         .catch(() => {
           alert('商品已存在，請修改數量即可~')
+          vm.isLoading = false
+        })
+    },
+    getShopping () {
+      const vm = this
+      vm.axios
+        .get(
+          `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/shopping`
+        )
+        .then((response) => {
+          vm.apiShoppingData.data = response.data.data
+          let total = 0
+          vm.apiShoppingData.data.forEach((item) => {
+            total += item.product.price * item.quantity
+          })
+          vm.apiShoppingData.moneyTotal = total
           vm.isLoading = false
         })
     }

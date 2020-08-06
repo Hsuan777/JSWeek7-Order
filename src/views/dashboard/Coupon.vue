@@ -35,7 +35,7 @@
               <span v-if="item.enabled" class="text-success">已開放</span>
               <span v-else class="text-danger">未開放</span>
             </td>
-            <td class="pr-0">
+            <!-- <td class="pr-0">
               <button
                 class="btn btn-secondary mr-2"
                 @click="copyData(item)"
@@ -48,7 +48,19 @@
                 data-toggle="modal"
                 data-target="#deleteProductModal"
               >刪除</button>
-            </td>
+            </td> -->
+            <td class="pr-0">
+              <div class="btn-group">
+                <button
+                  class="btn btn-secondary"
+                  @click="copyData('edit', item)"
+                >修改</button>
+                <button
+                  class="btn btn-outline-danger"
+                  @click="copyData('delete', item)"
+                >刪除</button>
+              </div>
+             </td>
           </tr>
         </tbody>
       </table>
@@ -199,12 +211,12 @@ export default {
         code: 'code871',
         percent: 10,
         enabled: true,
+        // TODO: 格式化時間
         deadline_at: '2020-12-31 23:23:59'
       },
       temporary: {},
       modalTitle: '',
       isLoading: false
-
     }
   },
   props: ['token'],
@@ -233,16 +245,13 @@ export default {
         })
     },
     /* 新建資料 */
-    // 將 this.product的屬性值複製到暫存
     initData () {
       this.modalTitle = '新增優惠券'
       this.temporary = Object.assign({}, this.coupon)
     },
     /* 複製資料 */
-    // 將 v-for所取出的 item放入暫存
-    copyData (item) {
+    copyData (action, item) {
       const vm = this
-      $('#addCouponModal').modal('hide')
       vm.isLoading = true
       vm.axios.defaults.headers.common.Authorization = `Bearer ${vm.token}`
       vm.axios
@@ -251,17 +260,21 @@ export default {
           this.temporary = Object.assign({}, res.data.data)
           vm.modalTitle = this.temporary.title
           vm.isLoading = false
-          $('#addCouponModal').modal('show')
+          if (action === 'edit') {
+            $('#addCouponModal').modal('show')
+          } else if (action === 'delete') {
+            $('#deleteCouponModal').modal('show')
+          }
         })
     },
     /* 修改資料 */
     updateData () {
       const vm = this
+      vm.isLoading = true
       if (vm.temporary.id) {
         vm.hexAPI.data.forEach((item) => {
           if (vm.temporary.id === item.id) {
             vm.axios.defaults.headers.common.Authorization = `Bearer ${vm.token}`
-            // patch跟 post一樣需要兩個參數 patch(`API網址`, 單一物件資料)，否則不會變更
             vm.axios
               .patch(`${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/ec/coupon/${vm.temporary.id}`, vm.temporary)
               .then(() => {

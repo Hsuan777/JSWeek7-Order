@@ -65,7 +65,9 @@ h1, h2, h3, h4{
 .object-fit{
   object-fit: cover;
 }
-.test{
-  width: 450px;
-  height: 550px;
+.inner{
+  &__img{
+    width: 450px;
+    height: 550px;
+  }
 }

@@ -18,7 +18,7 @@
         <thead>
           <tr>
             <th scope="row" class="text-nowrap">檔案名稱</th>
-            <th scope="row" width="300px">縮圖</th>
+            <th scope="row" width="150px">縮圖</th>
             <th scope="row" class="text-nowrap">編輯</th>
           </tr>
         </thead>
@@ -30,16 +30,9 @@
             </td>
             <td class="pr-0">
               <button
-                class="btn btn-secondary mr-2"
-                @click="copyData(item)"
-                data-toggle="modal"
-                data-target="#addProductModal"
-              >修改</button>
-              <button
                 class="btn btn-outline-danger mr-0"
                 @click="copyData(item)"
-                data-toggle="modal"
-                data-target="#deleteProductModal"
+                data-target="#deleteStorageModal"
               >刪除</button>
             </td>
           </tr>
@@ -66,21 +59,19 @@
           </div>
           <div class="modal-body">
             <form action="#">
-              <div class="form-row">
-                <div class="col-6">
-                  <div class="form-group">
-                    <label for class>商品圖片</label>
-                    <!-- accept 能接受的檔案類型 -->
-                    <input
-                      type="file"
-                      class="form-control"
-                      accept="image/png, image/jpeg"
-                      @change="getFile"
-                      ref="updataFile"
-                    />
-                  </div>
-                  <img :src="temporary.file" alt class="img-fluid" v-if="temporary.file">
+              <div class="form-row justify-content-center">
+                <div class="form-group">
+                  <label for class>商品圖片</label>
+                  <!-- accept 能接受的檔案類型 -->
+                  <input
+                    type="file"
+                    class="form-control"
+                    accept="image/png, image/jpeg"
+                    @change="previewFile"
+                    ref="updataFile"
+                  />
                 </div>
+                <img ref="previewImg" alt="" class="img-fluid">
               </div>
             </form>
           </div>
@@ -89,8 +80,7 @@
             <button
               type="button"
               class="btn btn-primary"
-              @click="updateData"
-              data-dismiss="modal"
+              @click="addData"
             >Save</button>
           </div>
         </div>
@@ -98,12 +88,12 @@
     </div>
 
     <!-- delete Modal -->
-    <!-- <div
+    <div
       class="modal fade"
-      id="deleteCouponModal"
+      id="deleteStorageModal"
       tabindex="-1"
       role="dialog"
-      aria-labelledby="addCouponModalLabel"
+      aria-labelledby="addStorageModalLabel"
       aria-hidden="true"
     >
       <div class="modal-dialog" role="document">
@@ -115,10 +105,10 @@
             </button>
           </div>
           <div class="modal-body">
-            <h3>
-              是否刪除
-              <span class="text-danger">{{ temporary.title }}</span> ? 刪除後將無法復原 !
-            </h3>
+            <h3>是否刪除這張圖片? 刪除後將無法復原 !</h3>
+            <div class="d-flex justify-content-center">
+              <img  :src="temporary.path" alt="" class="img-fluid">
+            </div>
           </div>
           <div class="modal-footer">
             <button
@@ -131,7 +121,7 @@
           </div>
         </div>
       </div>
-    </div> -->
+    </div>
   </section>
 </template>
 
@@ -143,8 +133,10 @@ export default {
       hexAPI: {
         data: []
       },
-      temporary: {
-        file: ''
+      temporary: {},
+      previewTemporary: {
+        file: '',
+        src: ''
       },
       modalTitle: '',
       isLoading: false
@@ -165,77 +157,51 @@ export default {
           vm.isLoading = false
         })
     },
-    getFile () {
-      // const vm = this
-      // vm.temporary.file = vm.$refs.updataFile.files[0]
-      // TODO:上傳圖片預覽
-      // const formData = new FormData()
-      // formData.append('image', vm.$refs.updataFile.files[0])
-      // const objectURL = URL.createObjectURL(vm.$refs.updataFile.files[0])
-      // console.log(objectURL)
-      // const reader = new FileReader()
-      // reader.onload = function (e) {
-      //   console.log('file:', e.target.result)
-      // }
-      // reader.readAsDataURL(vm.temporary.file)
+    previewFile () {
+      const vm = this
+      vm.previewTemporary.file = vm.$refs.updataFile.files[0]
+      // 使用 FileReader()，並建立監聽事件 load
+      const reader = new FileReader()
+      reader.addEventListener('load', () => {
+        vm.previewTemporary.src = reader.result
+        vm.$set(vm.$refs.previewImg, 'src', vm.previewTemporary.src)
+      })
+      // readAsDataURL，會將指定的檔案轉成 base64後並觸發監聽事件
+      // reader.result就會有結果
+      reader.readAsDataURL(vm.previewTemporary.file)
     },
     /* 新增資料 */
     addData () {
       const vm = this
-      const formData = new FormData()
-      formData.append('file', vm.$refs.updataFile.files[0])
-      vm.axios.defaults.headers.common.Authorization = `Bearer ${vm.token}`
-      vm.axios
-        .post(`${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/storage`, formData)
-        .then(() => {
-          vm.getData()
-        })
+      if (vm.previewTemporary.file) {
+        const formData = new FormData()
+        vm.isLoading = true
+        $('#addStorageModal').modal('hide')
+        formData.append('file', vm.previewTemporary.file)
+        vm.axios.defaults.headers.common.Authorization = `Bearer ${vm.token}`
+        vm.axios
+          .post(`${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/storage`, formData)
+          .then(() => {
+            vm.getData()
+            vm.cleanData()
+          })
+      } else {
+        // TODO:似乎可以用驗證方式來回饋錯誤訊息
+        alert('請選擇檔案~')
+      }
     },
-    /* 新建資料 */
-    // 將 this.product的屬性值複製到暫存
+    /* 新建檔案 */
     initData () {
       this.modalTitle = '新增檔案'
-      this.temporary = Object.assign({}, this.coupon)
     },
     /* 複製資料 */
-    // 將 v-for所取出的 item放入暫存
     copyData (item) {
       const vm = this
-      $('#addCouponModal').modal('hide')
-      vm.isLoading = true
-      vm.axios.defaults.headers.common.Authorization = `Bearer ${vm.token}`
-      vm.axios
-        .get(`${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/storage/${item.id}`)
-        .then((res) => {
-          this.temporary = Object.assign({}, res.data.data)
-          vm.modalTitle = this.temporary.title
-          vm.isLoading = false
-          $('#addCouponModal').modal('show')
-        })
+      vm.temporary = item
+      vm.modalTitle = '是否刪除此筆檔案 ? '
+      $('#deleteStorageModal').modal('show')
     },
-    /* 修改資料 */
-    updateData () {
-      const vm = this
-      if (vm.temporary.id) {
-        vm.hexAPI.data.forEach((item) => {
-          if (vm.temporary.id === item.id) {
-            vm.axios.defaults.headers.common.Authorization = `Bearer ${vm.token}`
-            // patch跟 post一樣需要兩個參數 patch(`API網址`, 單一物件資料)，否則不會變更
-            vm.axios
-              .patch(`${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/storage/${vm.temporary.id}`, vm.temporary)
-              .then(() => {
-                vm.getData()
-                vm.cleanData()
-                vm.modalTitle = vm.temporary.title
-              })
-          }
-        })
-      } else {
-        vm.addData()
-      }
-      vm.cleanData()
-    },
-    /* 刪除資料 */
+    /* 刪除檔案 */
     deleteData () {
       const vm = this
       vm.isLoading = true
@@ -247,7 +213,6 @@ export default {
             .then(() => {
               vm.getData()
               vm.cleanData()
-              vm.isLoading = false
             })
         }
       })

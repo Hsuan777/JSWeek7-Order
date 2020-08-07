@@ -8,12 +8,19 @@
     background-size: cover;
     background-repeat: no-repeat;
     right: 0;
-    z-index: 9;
+    z-index: -1;
     box-shadow: 0px 0px 20px map-get($theme-colors, primary);
     border-radius: 0 0 0 10px ;
   }
   &__title {
     height: 800px;
+  }
+}
+.bg-nav {
+  background-color: rgba(0, 0, 0, 0.5);
+  @include media-breakpoint-up(md) {
+    background-color: transparent;
+
   }
 }
 

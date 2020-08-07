@@ -15,7 +15,7 @@
 
     <cart :shopping="apiShoppingData"></cart>
     <ul class="list__products row list-unstyled mb-5">
-      <li class="col-4" v-for="(item) in hexAPI.data" :key="item.id">
+      <li class="col-12 col-md-6 col-lg-4" v-for="(item) in hexAPI.data" :key="item.id">
         <div class="card mb-3">
           <img :src="item.imageUrl[0]" class="img-fluid rounded-top">
           <div class="card-body">

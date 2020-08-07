@@ -8,16 +8,15 @@
             <div class="col">
               <div class=" ">
                 <h2 class="font-weight-bold mb-5">{{ title }}</h2>
-                <!-- <button type="button" class="btn btn-primary btn-lg">快速維修</button> -->
                 <div class="btn-group">
-                  <router-link to="/repair" class="btn btn-primary btn-lg">快速維修</router-link>
-                  <router-link to="/products" class="btn btn-secondary btn-lg">行李箱</router-link>
+                  <router-link to="/repair" class="btn btn-info btn-lg font-weight-bold">快速維修</router-link>
+                  <router-link to="/products" class="btn btn-primary btn-lg font-weight-bold">行李箱</router-link>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-6 banner__img"></div>
+        <div class="col-md-12 col-lg-6 banner__img"></div>
       </div>
     </section>
     <!-- 服務 -->

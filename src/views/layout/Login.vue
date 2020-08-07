@@ -1,7 +1,9 @@
 
 <template>
   <section class="container">
-    <h2 class="text-center my-5">Login</h2>
+    <loading :active.sync="isLoading"></loading>
+    <h2 class="text-center pt-5 my-5">Login</h2>
+    <p class="text-center text-danger" v-if="isError">帳密有誤</p>
     <div class="row">
       <div class="col-3 mx-auto">
         <validation-observer v-slot="{ invalid }">
@@ -47,7 +49,7 @@
               <button
                 type="submit"
                 class="btn btn-primary mb-2"
-                @click="login"
+                @click.prevent="login"
                 :disabled="invalid"
               >登入</button>
             </div>
@@ -65,13 +67,15 @@ export default {
       user: {
         email: '',
         password: ''
-      }
+      },
+      isLoading: false,
+      isError: false
     }
   },
   methods: {
     login (e) {
       const vm = this
-      e.preventDefault()
+      vm.isLoading = true
       vm.axios
         .post(`${process.env.VUE_APP_APIPATH}auth/login`, this.user)
         .then((res) => {
@@ -86,13 +90,15 @@ export default {
           // 清空
           vm.user.email = ''
           vm.user.password = ''
+          this.isError = false
           // $route是屬性
           // $router是方法
           // window.location = "products.html";
           this.$router.push('admin/products')
         })
-        .catch((error) => {
-          console.log(error)
+        .catch(() => {
+          this.isLoading = false
+          this.isError = true
         })
     }
   }

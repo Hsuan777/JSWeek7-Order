@@ -248,9 +248,9 @@
 
 <script>
 import $ from 'jquery'
-import pagination from '../../components/pagination.vue'
+import Pagination from '@/components/Pagination.vue'
 export default {
-  components: { pagination },
+  components: { Pagination },
   data () {
     return {
       product: {

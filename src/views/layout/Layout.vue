@@ -32,7 +32,7 @@
               <router-link to="/question" class="nav-link">常見問題</router-link>
             </li>
             <li class="nav-item">
-              <router-link to="/contact" class="nav-link">維修案例</router-link>
+              <router-link to="/case" class="nav-link">維修案例</router-link>
             </li>
             <li class="nav-item">
               <router-link to="/login" class="nav-link">Login</router-link>

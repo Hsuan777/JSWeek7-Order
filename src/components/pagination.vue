@@ -21,7 +21,7 @@
 </template>
 <script>
 export default {
-  name: 'pagination',
+  name: 'Pagination',
   // 原本是用陣列，若要指令細節，則是用物件，並將自訂名稱作為屬性名稱
   props: {
     pages: {

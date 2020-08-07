@@ -45,10 +45,13 @@
 </template>
 
 <script type="module">
-import pagination from '../../components/pagination.vue'
-import cart from '../../components/cart.vue'
+import Pagination from '@/components/Pagination.vue'
+import Cart from '@/components/Cart.vue'
 export default {
-  components: { pagination, cart },
+  components: {
+    Pagination,
+    Cart
+  },
   data () {
     return {
       hexAPI: {

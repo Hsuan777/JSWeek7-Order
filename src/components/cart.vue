@@ -75,7 +75,7 @@
 <script>
 import $ from 'jquery'
 export default {
-  name: 'cart',
+  name: 'Cart',
   data () {
     return {
       temporary: {},

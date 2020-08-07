@@ -23,6 +23,10 @@ const routes = [
         component: () => import('../views/layout/Product.vue')
       },
       {
+        path: 'repair',
+        component: () => import('../views/layout/Repair.vue')
+      },
+      {
         path: 'payment',
         component: () => import('../views/layout/Payment.vue')
       },
